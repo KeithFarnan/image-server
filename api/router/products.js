@@ -4,39 +4,39 @@ const router = express.Router();
 
 router.get("/", (req, res, next) => {
   res.status(200).json({
-    message: "This is a Json GET request for images"
+    message: "This is a Json GET request :)"
   });
 });
 
 router.post("/", (req, res, next) => {
   res.status(201).json({
-    message: "This is a Json POST request for images"
+    message: "This is a Json POST request :)"
   });
 });
 
 // : sets up the the valuesis a variable
-router.get("/:orderId", (req, res, next) => {
-  const id = req.params.orderId;
+router.get("/:productId", (req, res, next) => {
+  const id = req.params.productId;
   if (id === "special") {
-    res.status(201).json({
+    res.status(200).json({
       message: " This is the special URL"
     });
   } else {
-    res.status(201).json({
-      message: "You passed an id for an image"
+    res.status(200).json({
+      message: "You passed an id"
     });
   }
 });
 
-router.patch("/:imageId", (req, res, next) => {
+router.patch("/:productId", (req, res, next) => {
   res.status(200).json({
-    message: "Images updated"
+    message: "Updated Product"
   });
 });
 
-router.delete("/:imageId", (req, res, next) => {
+router.delete("/:productId", (req, res, next) => {
   res.status(200).json({
-    message: "iamge deleted"
+    message: "Product deleted"
   });
 });
 

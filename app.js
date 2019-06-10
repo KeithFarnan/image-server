@@ -4,9 +4,9 @@ const express = require("express");
 const app = express();
 
 // creating the const values which referenc the API routes file locations for each element
-const productRoutes = require("./Api/Routes/Products");
-const orderRoutes = require("./Api/Routes/Orders");
-const imageRoutes = require("./Api/Routes/Images");
+const productRoutes = require("./api/router/products");
+const orderRoutes = require("./api/router/orders");
+const imageRoutes = require("./api/router/images");
 
 // all urls with /images will use imageRoutes files
 // this way allows us to split up the code into seperate files
