@@ -20,7 +20,7 @@ router.post("/", (req, res, next) => {
   });
 });
 
-// : sets up the the valuesis a variable
+// : sets up the the valuesis a va riable
 router.get("/:orderId", (req, res, next) => {
   const id = req.params.orderId;
   if (id === "special") {
