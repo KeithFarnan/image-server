@@ -9,8 +9,15 @@ router.get("/", (req, res, next) => {
 });
 
 router.post("/", (req, res, next) => {
+  // Creating new product as javaScript Object
+  // what is expected is stated in the documentation
+  const product = {
+    name: req.body.name,
+    price: req.body.price
+  };
   res.status(201).json({
-    message: "This is a Json POST request :)"
+    message: "Handelling POST request to /products",
+    createdProduct: product
   });
 });
 

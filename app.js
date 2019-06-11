@@ -22,7 +22,8 @@ extended false means only simple bodys will be parsed
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // This will extract JSON data in an easily readable format
-app.use(bodyParser.json);
+// This is added as a method but without parameters
+app.use(bodyParser.json());
 
 // all urls with /images will use imageRoutes files
 // this way allows us to split up the code into seperate files
