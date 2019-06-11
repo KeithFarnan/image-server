@@ -6,6 +6,11 @@ const app = express();
 const morgan = require("morgan");
 // importing the body parser method
 const bodyParser = require("body-parser");
+// Importing mongoose to create connection to the db
+const mongoose = require("mongoose");
+
+// creating connection to the db
+mongoose.connect("mongodb://localhost:27017/images", { useNewUrlParser: true });
 
 // creating the const values which referenc the API routes file locations for each element
 const productRoutes = require("./api/router/products");
