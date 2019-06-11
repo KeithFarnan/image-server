@@ -25,6 +25,28 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // This is added as a method but without parameters
 app.use(bodyParser.json());
 
+// This prevents CORS errors from happening
+// CORS errors are a security feature for browsers preventing
+// other ports from connection to the server
+// This setup gives access to everyone with the * for the origin
+// this appends the headers to any response we get
+// funnels every request thourugh this appending the headers to it
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, Content-Length, X-Requested-With, Accept"
+  );
+  // browser sends options with post or put first
+  if (req.method === "OPTIONS") {
+    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,PATCH");
+    // sends the response with all the headers attached
+    return res.status(200).json({});
+  }
+  // Calling the next method because this did not handle the request and passes it along to the other methods
+  next();
+});
+
 // all urls with /images will use imageRoutes files
 // this way allows us to split up the code into seperate files
 app.use("/products", productRoutes);
