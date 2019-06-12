@@ -11,6 +11,8 @@ const mongoose = require("mongoose");
 
 // creating connection to the db
 mongoose.connect("mongodb://localhost:27017/images", { useNewUrlParser: true });
+// This removes the deprecation warning on the console
+mongoose.Promise = global.Promise;
 
 // creating the const values which referenc the API routes file locations for each element
 const productRoutes = require("./api/router/products");
