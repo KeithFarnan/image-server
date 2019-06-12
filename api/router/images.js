@@ -1,11 +1,9 @@
 const express = require("express");
-
 const router = express.Router();
 
 router.get("/", (req, res, next) => {
-  res.status(200).json({
-    message: "This is a Json GET request for images"
-  });
+  image.find().se;
+  res.status(200).json({});
 });
 
 router.post("/", (req, res, next) => {
