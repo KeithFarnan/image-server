@@ -118,7 +118,7 @@ router.patch("/:imageId", (req, res, next) => {
 
 router.delete("/:imageId", (req, res, next) => {
   const id = req.params.imageId;
-  Product.remove({
+  Image.remove({
     _id: id
   })
     .exec()
