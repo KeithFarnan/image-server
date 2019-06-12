@@ -3,19 +3,20 @@ const router = express.Router();
 const Image = require("../models/image");
 const mongoose = require("mongoose");
 
+// GET request for all images
 router.get("/", (req, res, next) => {
   Image.find()
-    .select("name location date _id")
+    .select("_id date name location")
     .exec()
     .then(docs => {
       const response = {
         count: docs.length,
         products: docs.map(doc => {
           return {
+            _id: doc._id,
+            date: doc.date,
             name: doc.name,
             location: doc.location,
-            date: doc.date,
-            _id: doc._id,
             request: {
               type: "GET",
               url: "http://localhost:3000/images/" + doc._id
@@ -34,35 +35,102 @@ router.get("/", (req, res, next) => {
 });
 
 router.post("/", (req, res, next) => {
-  res.status(201).json({
-    message: "This is a Json POST request for images"
+  // Creating new product as javaScript Object
+  // what is expected is stated in the documentation
+  // Passing JavaScript objec as the parameters for the object
+  const image = new Image({
+    _id: new mongoose.Types.ObjectId(),
+    date: req.body.date,
+    name: req.body.name,
+    location: req.body.location
   });
+  image
+    .save()
+    .then(result => {
+      res.status(201).json({
+        message: "Creted images",
+        createdImage: {
+          _id: result.id,
+          date: result.date,
+          name: result.name,
+          location: result.location,
+          request: {
+            type: "post",
+            url: "http://localhost:3000/images/" + result._id
+          }
+        }
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({
+        error: err
+      });
+    });
 });
 
 // : sets up the the valuesis a variable
-router.get("/:orderId", (req, res, next) => {
-  const id = req.params.orderId;
-  if (id === "special") {
-    res.status(200).json({
-      message: " This is the special URL"
+router.get("/:imageId", (req, res, next) => {
+  const id = req.params.imageId;
+  Image.findById(id)
+    .select("_id date name location")
+    .exec()
+    .then(doc => {
+      if (doc) {
+        res.status(200).json({
+          product: doc,
+          request: {
+            type: "GET",
+            url: "http://localhost:3000/images/" + doc._id
+          }
+        });
+      } else {
+        res.status(404).json({
+          message: "No image found for this id"
+        });
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ error: err });
     });
-  } else {
-    res.status(200).json({
-      message: "You passed an id for an image"
-    });
-  }
 });
 
 router.patch("/:imageId", (req, res, next) => {
-  res.status(200).json({
-    message: "Images updated"
-  });
+  const id = req.params.imageId;
+  const updateOps = {};
+  for (const ops of req.body) {
+    updateOps[ops.propName] = ops.value;
+  }
+  Image.update({ _id: id }, { $set: updateOps })
+    .exec()
+    .then(result => {
+      console.log(result);
+      res.status(200).json(result);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({
+        error: err
+      });
+    });
 });
 
 router.delete("/:imageId", (req, res, next) => {
-  res.status(200).json({
-    message: "iamge deleted"
-  });
+  const id = req.params.imageId;
+  Product.remove({
+    _id: id
+  })
+    .exec()
+    .then(result => {
+      res.status(200).json(result);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({
+        error: err
+      });
+    });
 });
 
 module.exports = router;
