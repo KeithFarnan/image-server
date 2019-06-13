@@ -60,5 +60,5 @@ typings/
 # next.js build output
 .next
 
-# Test file to see if it uploads to Github
-testietest.js
+# This File contains the server configuration like the passwords for the db
+serverConfiguration.js
