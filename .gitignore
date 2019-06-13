@@ -61,7 +61,7 @@ typings/
 .next
 
 # This File contains the server configuration like the passwords for the db
-serverConfiguration.js
+serverConfiguration.json
 
 # Ignore this file when uploading in the future
 nodemon.json
