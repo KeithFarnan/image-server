@@ -18,6 +18,7 @@ mongoose.Promise = global.Promise;
 const productRoutes = require("./api/router/products");
 const orderRoutes = require("./api/router/orders");
 const imageRoutes = require("./api/router/images");
+const userRoutes = require("./api/router/users");
 
 // prompting the server to log the data befor it is passed to the routes
 app.use(morgan("dev"));
@@ -59,6 +60,7 @@ app.use((req, res, next) => {
 app.use("/products", productRoutes);
 app.use("/orders", orderRoutes);
 app.use("/images", imageRoutes);
+app.use("/users", userRoutes);
 
 // all requests that are not any of the above are handelled below
 app.use((req, res, next) => {
