@@ -4,7 +4,11 @@ const userSchema = mongoose.Schema({
   // _id is convention
   //   ObjectId specific and  unique
   _id: mongoose.Schema.Types.ObjectId,
-  name: { type: String, required: true },
+  name: {
+    type: String,
+    required: true,
+    unique: true
+  },
   password: { type: String, required: true }
 });
 // this has a capital letter by convention

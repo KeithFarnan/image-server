@@ -11,38 +11,50 @@ const User = require("../models/user");
 // what is expected is stated in the documentation
 // Passing JavaScript objec as the parameters for the object
 router.post("/signup", (req, res, next) => {
-  // hash the password 10 times - either get error or hash
-  bcrypt.hash(req.body.password, 10, (err, hash) => {
-    if (err) {
-      return res.status(500).json({
-        error: "did not hash the password"
-      });
-    } else {
-      const user = new User({
-        _id: new mongoose.Types.ObjectId(),
-        name: req.body.name,
-        password: hash
-      });
-      user
-        .save()
-        .then(result => {
-          res.status(201).json({
-            message: "Creted user",
-            createdUser: {
-              id: result.id,
-              name: result.name,
-              password: result.password
-            }
-          });
-        })
-        .catch(err => {
-          console.log(err);
-          res.status(500).json({
-            error: "Did not create the user"
-          });
+  User.find({ name: req.body.name })
+    .exec()
+    .then(user => {
+      // if the user exists throw this error
+      // it returns an array check if the array contains anything
+      if (user.length >= 1) {
+        return res.status(409).json({
+          error: "name already exists"
         });
-    }
-  });
+      } else {
+        // hash the password 10 times - either get error or hash
+        bcrypt.hash(req.body.password, 10, (err, hash) => {
+          if (err) {
+            return res.status(500).json({
+              error: "did not hash the password"
+            });
+          } else {
+            const user = new User({
+              _id: new mongoose.Types.ObjectId(),
+              name: req.body.name,
+              password: hash
+            });
+            user
+              .save()
+              .then(result => {
+                res.status(201).json({
+                  message: "Creted user",
+                  createdUser: {
+                    id: result.id,
+                    name: result.name,
+                    password: result.password
+                  }
+                });
+              })
+              .catch(err => {
+                console.log(err);
+                res.status(500).json({
+                  error: "Did not create the user"
+                });
+              });
+          }
+        });
+      }
+    });
 });
 
 router.get("/", (req, res, next) => {
@@ -124,13 +136,14 @@ router.patch("/:userId", (req, res, next) => {
 });
 
 router.delete("/:userId", (req, res, next) => {
-  const id = req.params.userId;
   User.remove({
-    _id: id
+    _id: req.params.userId
   })
     .exec()
     .then(result => {
-      res.status(200).json(result);
+      res.status(200).json({
+        message: "User deleted"
+      });
     })
     .catch(err => {
       console.log(err);
