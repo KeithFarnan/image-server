@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 // importing user model
 const User = require("../models/user");
@@ -54,6 +55,56 @@ router.post("/signup", (req, res, next) => {
           }
         });
       }
+    });
+});
+
+router.post("/login", (req, res, next) => {
+  User.find({ name: req.body.name })
+    // gets us a promise
+    .exec()
+    .then(user => {
+      if (user.length < 1) {
+        // 401 is unautorised
+        return res.status(401).json({
+          message:
+            "Auth failed - no user with this name \
+- (this is just for testing will be deleted before being deployed)"
+        });
+      }
+      // after checking if the user exists check the password
+      // because it is an array use user[0] for the first index
+      bcrypt.compare(req.body.password, user[0].password, (err, result) => {
+        if (err) {
+          return res.status(401).json({
+            /* TODO change this response to a generic one which does not give 
+            away why it did not work */
+            message: "Auth failed - no password was entered"
+          });
+        }
+        if (result) {
+          const token = jwt.sign(
+            {
+              id: user[0]._id,
+              name: user[0].name
+            },
+            //Then need a private key for the jwt
+            // TODO this must be changed to an enviroment variable (unique & private)
+            "secret",
+            {
+              expiresIn: "1h"
+            }
+          );
+          return res.status(200).json({
+            message: "Auth successful - username and password match"
+          });
+        }
+        return res.status(401).json({
+          message: "Auth failed - Wrong password entered"
+        });
+      });
+    })
+    .catch(err => {
+      console.log(err);
     });
 });
 
