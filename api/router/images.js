@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Image = require("../models/image");
 const mongoose = require("mongoose");
+const checkAuth = require("../middleware/check-auth");
 
 // GET request for all images
 router.get("/", (req, res, next) => {
@@ -33,7 +34,7 @@ router.get("/", (req, res, next) => {
       });
     });
 });
-
+// POST request path execute left to rigth so the auth will go befor the rest
 router.post("/", (req, res, next) => {
   // Creating new product as javaScript Object
   // what is expected is stated in the documentation
