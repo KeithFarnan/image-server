@@ -60,8 +60,10 @@ typings/
 # next.js build output
 .next
 
-# This File contains the server configuration like the passwords for the db
-serverConfiguration.json
-
 # Ignore this file when uploading in the future
 nodemon.json
+
+# Ignore all image files uploaded during testing
+*.jpg
+*.jpeg
+*.png
