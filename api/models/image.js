@@ -4,9 +4,10 @@ const imageSchema = mongoose.Schema({
   // _id is convention
   //   ObjectId specific and  unique
   _id: mongoose.Schema.Types.ObjectId,
-  date: String,
-  name: String,
-  location: String
+  date: { type: String, required: false },
+  name: { type: String, required: true },
+  location: String,
+  url: { type: String, required: true }
 });
 // this has a capital letter by convention
 module.exports = mongoose.model("Image", imageSchema);
