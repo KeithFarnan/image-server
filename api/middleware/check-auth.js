@@ -4,7 +4,7 @@ module.exports = (req, res, next) => {
   try {
     // decode and verify the token
     //TODO change secret to enviroment variable for the server
-    const decoded = jwt.verify(req.body.token, "secret");
+    const decoded = jwt.verify(req.body.token, process.env.JWT_KEY);
     req.userData = decoded;
   } catch (error) {
     return res.status(401).json({
