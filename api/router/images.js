@@ -63,7 +63,7 @@ router.get("/", (req, res, next) => {
     });
 });
 // POST request path execute left to rigth so the auth will go befor the rest
-router.post("/", upload.single("picture"), (req, res, next) => {
+router.post("/", checkAuth, upload.single("picture"), (req, res, next) => {
   console.log(req.file);
   // Creating new product as javaScript Object
   // what is expected is stated in the documentation
@@ -101,6 +101,7 @@ router.post("/", upload.single("picture"), (req, res, next) => {
     });
 });
 
+// TODO Make sure get routes are also protected
 // : sets up the the valuesis a variable
 router.get("/:imageId", (req, res, next) => {
   const id = req.params.imageId;
@@ -128,7 +129,7 @@ router.get("/:imageId", (req, res, next) => {
     });
 });
 
-router.patch("/:imageId", (req, res, next) => {
+router.patch("/:imageId", checkAuth, (req, res, next) => {
   const id = req.params.imageId;
   const updateOps = {};
   for (const ops of req.body) {
@@ -148,7 +149,7 @@ router.patch("/:imageId", (req, res, next) => {
     });
 });
 
-router.delete("/:imageId", (req, res, next) => {
+router.delete("/:imageId", checkAuth, (req, res, next) => {
   const id = req.params.imageId;
   Image.remove({
     _id: id

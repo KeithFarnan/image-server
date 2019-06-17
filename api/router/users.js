@@ -7,16 +7,12 @@ const jwt = require("jsonwebtoken");
 // importing user model
 const User = require("../models/user");
 
-// create new user
-// Creating new user as javaScript Object
-// what is expected is stated in the documentation
-// Passing JavaScript objec as the parameters for the object
+// create new user Creating new user as javaScript Object what is expected is stated in the documentation Passing JavaScript objec as the parameters for the object
 router.post("/signup", (req, res, next) => {
   User.find({ name: req.body.name })
     .exec()
     .then(user => {
-      // if the user exists throw this error
-      // it returns an array check if the array contains anything
+      // if the user exists throw this error it returns an array check if the array contains anything
       if (user.length >= 1) {
         return res.status(409).json({
           error: "name already exists"
@@ -62,22 +58,21 @@ router.post("/login", (req, res, next) => {
   User.find({ name: req.body.name })
     // gets us a promise
     .exec()
+    // naming the array whatevey you want checks is the user is less than 1
     .then(user => {
       if (user.length < 1) {
         // 401 is unautorised
         return res.status(401).json({
+          // ! TODO This must be changed befor being deployed
           message:
-            "Auth failed - no user with this name \
-- (this is just for testing will be deleted before being deployed)"
+            "Auth failed - no user with this name - (this is just for testing will be deleted before being deployed)"
         });
       }
-      // after checking if the user exists check the password
-      // because it is an array use user[0] for the first index
+      // after checking if the user exists check the password matches, because it is an array use user[0] for the first index
       bcrypt.compare(req.body.password, user[0].password, (err, result) => {
         if (err) {
           return res.status(401).json({
-            /* TODO change this response to a generic one which does not give 
-            away why it did not work */
+            // ! TODO change this response to a generic one which does not give away why it did not work
             message: "Auth failed - no password was entered"
           });
         }
@@ -94,7 +89,9 @@ router.post("/login", (req, res, next) => {
             }
           );
           return res.status(200).json({
-            message: "Auth successful - username and password match"
+            // * Maybe this should be modified to give a better output
+            message: "Auth successful - username and password match",
+            token: token
           });
         }
         return res.status(401).json({
