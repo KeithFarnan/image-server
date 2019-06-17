@@ -64,6 +64,6 @@ typings/
 nodemon.json
 
 # Ignore all image files uploaded during testing
-*.jpg
-*.jpeg
-*.png
+uploads/*.jpg
+uploads/*.jpeg
+uploads/*.png
