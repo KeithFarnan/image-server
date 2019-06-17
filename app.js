@@ -24,6 +24,8 @@ const userRoutes = require("./api/router/users");
 // prompting the server to log the data befor it is passed to the routes
 app.use(morgan("dev"));
 
+//creating a static route to the images folder only used for urls targeted at /uploads
+app.use("/uploads", express.static("uploads"));
 /*
 Passing url encoded bodys
 extended false means only simple bodys will be parsed 
