@@ -88,7 +88,6 @@ router.post("/login", (req, res, next) => {
               name: user[0].name
             },
             //Then need a private key for the jwt
-            // TODO this must be changed to an enviroment variable (unique & private)
             process.env.JWT_KEY,
             {
               expiresIn: "1h"
