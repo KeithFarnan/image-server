@@ -10,8 +10,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 
 // creating connection to the db
-mongoose.connect(process.env.MONGO_SERVER);
-// , { useNewUrlParser: true });
+mongoose.connect(process.env.MONGO_SERVER, { useNewUrlParser: true });
 // This removes the deprecation warning on the console
 mongoose.Promise = global.Promise;
 
@@ -85,6 +84,7 @@ app.use((error, req, res, next) => {
   use specific error status else use 500 for generic 
   server error as response object 
   */
+
   res.status(error.status || 500);
   // return JSON object
   res.json({
