@@ -67,3 +67,6 @@ nodemon.json
 uploads/*.jpg
 uploads/*.jpeg
 uploads/*.png
+
+# Ignore config files
+api/config/production.json
