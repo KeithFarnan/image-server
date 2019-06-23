@@ -9,7 +9,7 @@ const User = require("../../models/user");
 
 /**
 |--------------------------------------------------
-| 
+| This is a comment section
 |--------------------------------------------------
 */
 // create new user Creating new user as javaScript Object what is expected is stated in the documentation Passing JavaScript objec as the parameters for the object
