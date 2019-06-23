@@ -7,6 +7,11 @@ const jwt = require("jsonwebtoken");
 // importing user model
 const User = require("../../models/user");
 
+/**
+|--------------------------------------------------
+| 
+|--------------------------------------------------
+*/
 // create new user Creating new user as javaScript Object what is expected is stated in the documentation Passing JavaScript objec as the parameters for the object
 router.post("/signup", (req, res, next) => {
   User.find({ name: req.body.name })
