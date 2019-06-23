@@ -15,8 +15,8 @@ mongoose.connect(process.env.MONGO_SERVER, { useNewUrlParser: true });
 mongoose.Promise = global.Promise;
 
 // creating the const values which referenc the API routes file locations for each element
-const imageRoutes = require("./api/router/images");
-const userRoutes = require("./api/router/users");
+const imageRoutes = require("./routes/api/images");
+const userRoutes = require("./routes/api/users");
 
 // prompting the server to log the data befor it is passed to the routes
 app.use(morgan("dev"));

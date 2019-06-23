@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const Image = require("../models/image");
+const Image = require("../../models/image");
 const mongoose = require("mongoose");
 const multer = require("multer");
-const checkAuth = require("../middleware/check-auth");
+const checkAuth = require("../../middleware/check-auth");
 
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
