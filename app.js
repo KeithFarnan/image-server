@@ -10,7 +10,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 
 // creating connection to the db
-mongoose.connect(process.env.MONGO_SERVER, { useNewUrlParser: true });
+mongoose.connect("mongodb://192.168.1.130/images", { useNewUrlParser: true });
 // This removes the deprecation warning on the console
 mongoose.Promise = global.Promise;
 
