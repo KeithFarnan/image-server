@@ -70,3 +70,8 @@ uploads/*.png
 
 # Ignore config files
 api/config/production.json
+
+#Brads ignore files
+/node_modules
+package-lock.json
+config/production.json
