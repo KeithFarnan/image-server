@@ -3,13 +3,27 @@ const mongoose = require("mongoose");
 const userSchema = mongoose.Schema({
   // _id is convention
   //   ObjectId specific and  unique
-  _id: mongoose.Schema.Types.ObjectId,
   name: {
+    type: String,
+    required: true
+  },
+  email: {
     type: String,
     required: true,
     unique: true
   },
-  password: { type: String, required: true }
+  password: {
+    type: String,
+    required: true
+  },
+  avatar: {
+    type: String
+  },
+  date: {
+    type: Date,
+    default: Date.now
+  }
 });
+
 // this has a capital letter by convention
 module.exports = mongoose.model("User", userSchema);
