@@ -55,7 +55,7 @@ typings/
 .yarn-integrity
 
 # dotenv environment variables file
-.env
+*.env
 
 # next.js build output
 .next
@@ -71,7 +71,10 @@ uploads/*.png
 # Ignore config files
 api/config/production.json
 
-#Brads ignore files
+# ignore files
 /node_modules
 package-lock.json
 config/production.json
+
+# Ignore all files within the ReactWebApp Directory
+# /reactWebApp
