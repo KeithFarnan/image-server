@@ -78,3 +78,4 @@ config/production.json
 
 # Ignore all files within the ReactWebApp Directory
 # /reactWebApp
+/reactWebApp
