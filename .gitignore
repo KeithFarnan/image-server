@@ -77,5 +77,4 @@ package-lock.json
 config/production.json
 
 # Ignore all files within the ReactWebApp Directory
-# /reactWebApp
-/reactWebApp
+/react-image-server-frontend
