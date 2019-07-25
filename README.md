@@ -1,4 +1,6 @@
 # reactApiBackend
-Api Backend For React Application
 
-This application will allow the Prismic Application to interface with the server
+This is a server API built using Nodejs 
+
+This applicaiton can be used to display images using the Reactjs frontend application
+
