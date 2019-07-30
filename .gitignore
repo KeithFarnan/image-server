@@ -78,3 +78,6 @@ config/production.json
 
 # Ignore all files within the ReactWebApp Directory
 /react-image-server-frontend
+
+# ignore vscode settings
+.vscode
