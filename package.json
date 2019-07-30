@@ -7,10 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server",
     "server": "nodemon server",
-    "reactWebApp-install": "npm install --prefix reactWebApp",
-    "reactWebApp": "npm start --prefix reactWebApp",
+    "reactWebApp-install": "npm install --prefix react-image-server-frontend",
+    "reactWebApp": "npm start --prefix react-image-server-frontend",
     "dev": "concurrently \"npm run server\" \"npm run reactWebApp\"",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix reactWebApp && npm run build --prefix reactWebApp"
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix react-image-server-frontend && npm run build --prefix react-image-server-frontend"
   },
   "repository": {
     "type": "git",
