@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 // Pass a javaScript object to the schema method for how the product should look
 const userSchema = mongoose.Schema({
   // _id is convention
@@ -26,4 +26,4 @@ const userSchema = mongoose.Schema({
 });
 
 // this has a capital letter by convention
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model('User', userSchema);
