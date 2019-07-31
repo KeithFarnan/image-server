@@ -1,26 +1,21 @@
-/* 
-const http = require("http");
-// creates the server using the imported app object
-const server = http.createServer(app);
- */
 const express = require('express');
-const connectDB = require('./config/db');
+const connectDB = require('./database');
 const path = require('path');
 // executes express like a function allowing us to use methods
 const app = express();
 
 // all requests are funnelled through this middleware which logs the data and then lets it continue
 // morgan behind the scenes will use the next fuction saying "i logged it now you do something"
-const morgan = require("morgan");
+const morgan = require('morgan');
 
 // prompting the server to log the data befor it is passed to the routes
-app.use(morgan("dev"));
+app.use(morgan('dev'));
 
 // Connect Database
 connectDB();
 
 //creating a static route to the images folder only used for urls targeted at /uploads
-app.use("/api/uploads", express.static("uploads"));
+app.use('/api/uploads', express.static('uploads'));
 
 // Initialising the middleware
 app.use(express.json({ extended: false }));
@@ -34,14 +29,14 @@ this appends the headers to any response we get
 funnels every request thourugh this appending the headers to it
  */
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
+  res.header('Access-Control-Allow-Origin', '*');
   res.header(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization, Content-Length, X-Requested-With, Accept"
+    'Access-Control-Allow-Headers',
+    'Content-Type, Authorization, Content-Length, X-Requested-With, Accept'
   );
   // browser sends options with post or put first
-  if (req.method === "OPTIONS") {
-    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,PATCH");
+  if (req.method === 'OPTIONS') {
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH');
     // sends the response with all the headers attached
     return res.status(200).json({});
   }
@@ -60,7 +55,7 @@ app.use('/api/posts', require('./routes/api/posts'));
 // all requests that are not any of the above are handelled below
 app.use((req, res, next) => {
   //  new const of Error object with the text "Not Found"
-  const error = new Error("Not Found");
+  const error = new Error('Not Found');
   // setting the status code property
   error.status = 404;
   // Executes the next method fowarding the error object
