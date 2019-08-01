@@ -1,13 +1,14 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const Image = require("../../models/image");
-const mongoose = require("mongoose");
-const multer = require("multer");
-const checkAuth = require("../../middleware/check-auth");
+const Image = require('../../models/image');
+const mongoose = require('mongoose');
+const multer = require('multer');
+const auth = require('../../middleware/auth');
 
+// more detailed way of storing files not just destination
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
-    cb(null, "./uploads/");
+    cb(null, './uploads/');
   },
   filename: function(req, file, cb) {
     cb(null, file.originalname);
@@ -16,7 +17,8 @@ const storage = multer.diskStorage({
 
 const filefilter = (req, file, cb) => {
   //reject a file == false save == true
-  if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
+  // true saves the file, false does not
+  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
     cb(null, true);
   } else {
     cb(null, false);
@@ -24,17 +26,20 @@ const filefilter = (req, file, cb) => {
 };
 // defining where and how the files are stored
 const upload = multer({
+  // this uses the storage config we have set above
   storage: storage,
   limits: {
     // limiting filesize to 8mb
     fileSize: 1024 * 1024 * 8
   },
+  // uses the file filter set above
   fileFilter: filefilter
 });
+
 // GET request for all images
-router.get("/", (req, res, next) => {
+router.get('/', (req, res, next) => {
   Image.find()
-    .select("_id date name location url")
+    .select('_id date name location url')
     .exec()
     .then(docs => {
       const response = {
@@ -47,7 +52,7 @@ router.get("/", (req, res, next) => {
             location: doc.location,
             url: doc.url,
             request: {
-              type: "GET"
+              type: 'GET'
               //url: "http://localhost:3000/images/" + doc._id
             }
           };
@@ -62,33 +67,30 @@ router.get("/", (req, res, next) => {
       });
     });
 });
+
 // POST request path execute left to rigth so the auth will go befor the rest
-router.post("/", checkAuth, upload.single("picture"), (req, res, next) => {
+router.post('/', auth, upload.array('pictures'), (req, res, next) => {
   console.log(req.file);
   // Creating new product as javaScript Object
   // what is expected is stated in the documentation
   // Passing JavaScript objec as the parameters for the object
   const image = new Image({
     _id: new mongoose.Types.ObjectId(),
-    date: req.body.date,
-    name: req.body.name,
-    location: req.body.location,
-    url: req.file.path
+    imageTitle: req.body.imageTitle,
+    rawImageUrl: req.req.file.path
   });
   image
     .save()
     .then(result => {
       res.status(201).json({
-        message: "Creted images",
+        message: 'Creted images',
         createdImage: {
           _id: result.id,
-          date: result.date,
-          name: result.name,
-          location: result.location,
-          url: result.url,
+          imageTitle: result.imageTitle,
+          rawImageUrl: result.rawImageUrl,
           request: {
-            type: "post"
-            //url: "http://localhost:3000/images/" + result._id
+            type: 'post',
+            url: 'http://localhost:3000/images/' + result._id
           }
         }
       });
@@ -103,23 +105,23 @@ router.post("/", checkAuth, upload.single("picture"), (req, res, next) => {
 
 // TODO Make sure get routes are also protected
 // : sets up the the valuesis a variable
-router.get("/:imageId", (req, res, next) => {
+router.get('/:imageId', (req, res, next) => {
   const id = req.params.imageId;
   Image.findById(id)
-    .select("_id date name location url")
+    .select('_id date name location url')
     .exec()
     .then(doc => {
       if (doc) {
         res.status(200).json({
           product: doc,
           request: {
-            type: "GET",
-            url: "http://localhost:3000/images/" + doc._id
+            type: 'GET',
+            url: 'http://localhost:3000/images/' + doc._id
           }
         });
       } else {
         res.status(404).json({
-          message: "No image found for this id"
+          message: 'No image found for this id'
         });
       }
     })
@@ -129,7 +131,7 @@ router.get("/:imageId", (req, res, next) => {
     });
 });
 
-router.patch("/:imageId", checkAuth, (req, res, next) => {
+router.patch('/:imageId', auth, (req, res, next) => {
   const id = req.params.imageId;
   const updateOps = {};
   for (const ops of req.body) {
@@ -149,7 +151,7 @@ router.patch("/:imageId", checkAuth, (req, res, next) => {
     });
 });
 
-router.delete("/:imageId", checkAuth, (req, res, next) => {
+router.delete('/:imageId', auth, (req, res, next) => {
   const id = req.params.imageId;
   Image.remove({
     _id: id

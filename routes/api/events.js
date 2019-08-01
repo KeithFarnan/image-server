@@ -2,14 +2,42 @@ const express = require('express');
 const router = express.Router();
 const { check, validationResult } = require('express-validator/check');
 const auth = require('../../middleware/auth');
-const Post = require('../../models/post');
-const Profile = require('../../models/profile');
+const event = require('../../models/event');
 const User = require('../../models/user');
+const multer = require('multer');
 
-// @route    POST api/posts
-// @desc     Create a post
+// setting disk storage for multer to use
+const storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, './uploads/');
+  },
+  filename: function(req, file, cb) {
+    cb(null, file.originalname);
+  }
+});
+
+const filefilter = (req, file, cb) => {
+  //reject a file == false save == true
+  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+// defining where and how the files are stored
+const upload = multer({
+  storage: storage,
+  limits: {
+    // limiting filesize to 8mb
+    fileSize: 1024 * 1024 * 8
+  },
+  fileFilter: filefilter
+});
+
+// @route    event api/events
+// @desc     Create a event
 // @access   Private
-router.post(
+router.event(
   '/',
   [
     auth,
@@ -28,16 +56,16 @@ router.post(
     try {
       const user = await User.findById(req.user.id).select('-password');
 
-      const newPost = new Post({
+      const newevent = new event({
         text: req.body.text,
         name: user.name,
         avatar: user.avatar,
         user: req.user.id
       });
 
-      const post = await newPost.save();
+      const event = await newevent.save();
 
-      res.json(post);
+      res.json(event);
     } catch (err) {
       console.error(err.message);
       res.status(500).send('Server Error');
@@ -45,128 +73,129 @@ router.post(
   }
 );
 
-// @route    GET api/posts
-// @desc     Get all posts
+// @route    GET api/events
+// @desc     Get all events
 // @access   Private
 router.get('/', auth, async (req, res) => {
   try {
-    const posts = await Post.find().sort({ date: -1 });
-    res.json(posts);
+    const events = await event.find().sort({ date: -1 });
+    res.json(events);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
   }
 });
 
-// @route    GET api/posts/:id
-// @desc     Get post by ID
+// @route    GET api/events/:id
+// @desc     Get event by ID
 // @access   Private
 router.get('/:id', auth, async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const event = await event.findById(req.params.id);
 
-    if (!post) {
-      return res.status(404).json({ msg: 'Post not found' });
+    if (!event) {
+      return res.status(404).json({ msg: 'event not found' });
     }
 
-    res.json(post);
+    res.json(event);
   } catch (err) {
     console.error(err.message);
     if (err.kind === 'ObjectId') {
-      return res.status(404).json({ msg: 'Post not found' });
+      return res.status(404).json({ msg: 'event not found' });
     }
     res.status(500).send('Server Error');
   }
 });
 
-// @route    DELETE api/posts/:id
-// @desc     Delete a post
+// @route    DELETE api/events/:id
+// @desc     Delete a event
 // @access   Private
 router.delete('/:id', auth, async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const event = await event.findById(req.params.id);
 
-    if (!post) {
-      return res.status(404).json({ msg: 'Post not found' });
+    if (!event) {
+      return res.status(404).json({ msg: 'event not found' });
     }
 
     // Check user
-    if (post.user.toString() !== req.user.id) {
+    if (event.user.toString() !== req.user.id) {
       return res.status(401).json({ msg: 'User not authorized' });
     }
 
-    await post.remove();
+    await event.remove();
 
-    res.json({ msg: 'Post removed' });
+    res.json({ msg: 'event removed' });
   } catch (err) {
     console.error(err.message);
     if (err.kind === 'ObjectId') {
-      return res.status(404).json({ msg: 'Post not found' });
+      return res.status(404).json({ msg: 'event not found' });
     }
     res.status(500).send('Server Error');
   }
 });
 
-// @route    PUT api/posts/like/:id
-// @desc     Like a post
+// @route    PUT api/events/like/:id
+// @desc     Like a event
 // @access   Private
 router.put('/like/:id', auth, async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const event = await event.findById(req.params.id);
 
-    // Check if the post has already been liked
+    // Check if the event has already been liked
     if (
-      post.likes.filter(like => like.user.toString() === req.user.id).length > 0
+      event.likes.filter(like => like.user.toString() === req.user.id).length >
+      0
     ) {
-      return res.status(400).json({ msg: 'Post already liked' });
+      return res.status(400).json({ msg: 'event already liked' });
     }
 
-    post.likes.unshift({ user: req.user.id });
+    event.likes.unshift({ user: req.user.id });
 
-    await post.save();
+    await event.save();
 
-    res.json(post.likes);
+    res.json(event.likes);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
   }
 });
 
-// @route    PUT api/posts/unlike/:id
-// @desc     Like a post
+// @route    PUT api/events/unlike/:id
+// @desc     Like a event
 // @access   Private
 router.put('/unlike/:id', auth, async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const event = await event.findById(req.params.id);
 
-    // Check if the post has already been liked
+    // Check if the event has already been liked
     if (
-      post.likes.filter(like => like.user.toString() === req.user.id).length ===
-      0
+      event.likes.filter(like => like.user.toString() === req.user.id)
+        .length === 0
     ) {
-      return res.status(400).json({ msg: 'Post has not yet been liked' });
+      return res.status(400).json({ msg: 'event has not yet been liked' });
     }
 
     // Get remove index
-    const removeIndex = post.likes
+    const removeIndex = event.likes
       .map(like => like.user.toString())
       .indexOf(req.user.id);
 
-    post.likes.splice(removeIndex, 1);
+    event.likes.splice(removeIndex, 1);
 
-    await post.save();
+    await event.save();
 
-    res.json(post.likes);
+    res.json(event.likes);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
   }
 });
 
-// @route    POST api/posts/comment/:id
-// @desc     Comment on a post
+// @route    event api/events/comment/:id
+// @desc     Comment on a event
 // @access   Private
-router.post(
+router.event(
   '/comment/:id',
   [
     auth,
@@ -184,7 +213,7 @@ router.post(
 
     try {
       const user = await User.findById(req.user.id).select('-password');
-      const post = await Post.findById(req.params.id);
+      const event = await event.findById(req.params.id);
 
       const newComment = {
         text: req.body.text,
@@ -193,11 +222,11 @@ router.post(
         user: req.user.id
       };
 
-      post.comments.unshift(newComment);
+      event.comments.unshift(newComment);
 
-      await post.save();
+      await event.save();
 
-      res.json(post.comments);
+      res.json(event.comments);
     } catch (err) {
       console.error(err.message);
       res.status(500).send('Server Error');
@@ -205,15 +234,15 @@ router.post(
   }
 );
 
-// @route    DELETE api/posts/comment/:id/:comment_id
+// @route    DELETE api/events/comment/:id/:comment_id
 // @desc     Delete comment
 // @access   Private
 router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
+    const event = await event.findById(req.params.id);
 
     // Pull out comment
-    const comment = post.comments.find(
+    const comment = event.comments.find(
       comment => comment.id === req.params.comment_id
     );
 
@@ -228,15 +257,15 @@ router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
     }
 
     // Get remove index
-    const removeIndex = post.comments
+    const removeIndex = event.comments
       .map(comment => comment.id)
       .indexOf(req.params.comment_id);
 
-    post.comments.splice(removeIndex, 1);
+    event.comments.splice(removeIndex, 1);
 
-    await post.save();
+    await event.save();
 
-    res.json(post.comments);
+    res.json(event.comments);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');

@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-
 require('dotenv').config();
 
 // connect to mongoDB with async command and trycatch block

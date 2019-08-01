@@ -49,8 +49,7 @@ app.use((req, res, next) => {
 // setting the routes for the application to use
 app.use('/api/users', require('./routes/api/users'));
 app.use('/api/auth', require('./routes/api/auth'));
-app.use('/api/profile', require('./routes/api/profile'));
-app.use('/api/posts', require('./routes/api/posts'));
+app.use('/api/images', require('./routes/api/images'));
 
 // all requests that are not any of the above are handelled below
 app.use((req, res, next) => {

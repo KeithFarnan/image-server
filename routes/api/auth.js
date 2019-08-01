@@ -3,12 +3,9 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const auth = require('../../middleware/auth');
 const jwt = require('jsonwebtoken');
-// const config = require('config');
-require('dotenv').config();
-
 const { check, validationResult } = require('express-validator/check');
-
-const User = require('../../models/User');
+const User = require('../../models/user');
+require('dotenv').config();
 
 // @route    GET api/auth
 // @desc     Test route
