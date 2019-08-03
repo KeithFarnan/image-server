@@ -7,14 +7,18 @@ const auth = require('../../middleware/auth');
 
 // more detailed way of storing files not just destination
 const storage = multer.diskStorage({
-  destination: function(req, file, cb) {
-    cb(null, './uploads/');
+  destination: function(req, file, callback) {
+    callback(
+      null,
+      // __dirname +
+      'uploads/'
+    );
   },
-  filename: function(req, file, cb) {
-    cb(null, file.originalname);
+  filename: function(req, file, callback) {
+    callback(null, file.originalname + '-' + Date.now());
   }
 });
-
+// types of files to upload
 const filefilter = (req, file, cb) => {
   //reject a file == false save == true
   // true saves the file, false does not
@@ -69,25 +73,28 @@ router.get('/', (req, res, next) => {
 });
 
 // POST request path execute left to rigth so the auth will go befor the rest
-router.post('/', auth, upload.array('pictures'), (req, res, next) => {
-  console.log(req.file);
+router.post('/', auth, upload.single('picture'), (req, res, next) => {
+  console.log(req.files);
   // Creating new product as javaScript Object
   // what is expected is stated in the documentation
   // Passing JavaScript objec as the parameters for the object
   const image = new Image({
     _id: new mongoose.Types.ObjectId(),
     imageTitle: req.body.imageTitle,
-    rawImageUrl: req.req.file.path
+    images: [
+      {
+        rawImageUrl: req.files.path
+      }
+    ]
   });
   image
     .save()
     .then(result => {
       res.status(201).json({
-        message: 'Creted images',
+        message: 'Created image',
         createdImage: {
           _id: result.id,
           imageTitle: result.imageTitle,
-          rawImageUrl: result.rawImageUrl,
           request: {
             type: 'post',
             url: 'http://localhost:3000/images/' + result._id

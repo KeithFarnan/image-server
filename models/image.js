@@ -6,12 +6,12 @@ const imageSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
   imageTitle: String,
   rawImageUrl: {
-    type: String,
-    required: true
+    type: String
+    // required: true
+  },
+  jpegUrl: {
+    type: String
   }
-  // jpegUrl: {
-  //   type: String
-  // },
   // webPUrl: {
   //   type: String
   // }

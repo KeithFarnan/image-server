@@ -1,23 +1,32 @@
 const express = require('express');
 const router = express.Router();
-const { check, validationResult } = require('express-validator/check');
-const auth = require('../../middleware/auth');
-const event = require('../../models/event');
-const User = require('../../models/user');
+const Event = require('../../models/event');
+const mongoose = require('mongoose');
 const multer = require('multer');
+const auth = require('../../middleware/auth');
+const { check, validationResult } = require('express-validator/check');
+const mkdirp = require('mkdirp');
+const fs = require('fs');
+const User = require('../../models/user');
 
-// setting disk storage for multer to use
+// more detailed way of storing files not just destination
 const storage = multer.diskStorage({
-  destination: function(req, file, cb) {
-    cb(null, './uploads/');
+  destination: function(req, file, callback) {
+    callback(
+      null,
+      // __dirname +
+      'uploads/'
+      // + file.originalname
+    );
   },
-  filename: function(req, file, cb) {
-    cb(null, file.originalname);
+  filename: function(req, file, callback) {
+    callback(null, file.originalname + '-' + Date.now());
   }
 });
-
+// types of files to upload
 const filefilter = (req, file, cb) => {
   //reject a file == false save == true
+  // true saves the file, false does not
   if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
     cb(null, true);
   } else {
@@ -26,46 +35,77 @@ const filefilter = (req, file, cb) => {
 };
 // defining where and how the files are stored
 const upload = multer({
+  // this uses the storage config we have set above
   storage: storage,
   limits: {
     // limiting filesize to 8mb
     fileSize: 1024 * 1024 * 8
   },
+  // uses the file filter set above
   fileFilter: filefilter
 });
+
+// const make =
+mkdirp('uploads/user.name/the/fore', function(err) {
+  if (err) console.error(err);
+  console.log('created the file');
+});
+
+// Async/Await:
+async function copyFiles() {
+  try {
+    await fs.copy('/tmp/myfile', '/tmp/mynewfile');
+    console.log('success!');
+  } catch (err) {
+    console.error(err);
+  }
+}
 
 // @route    event api/events
 // @desc     Create a event
 // @access   Private
-router.event(
+router.post(
   '/',
-  [
-    auth,
-    [
-      check('text', 'Text is required')
-        .not()
-        .isEmpty()
-    ]
-  ],
-  async (req, res) => {
+  auth,
+  // make,
+  mkdirp,
+  upload.single('picture'),
+  async (req, res, next) => {
+    // console.log(req.file);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
+    const user = await User.findById(req.body.userId);
+    if (!user) return res.status(400).send('invalid user');
 
     try {
-      const user = await User.findById(req.user.id).select('-password');
-
-      const newevent = new event({
-        text: req.body.text,
-        name: user.name,
-        avatar: user.avatar,
-        user: req.user.id
+      let event = new Event({
+        _id: new mongoose.Types.ObjectId(),
+        user: user.userId,
+        eventTitle: req.body.eventTitle,
+        // images: [
+        //   {
+        rawImageUrl: req.file.path
+        //   }
+        // ]
       });
-
-      const event = await newevent.save();
-
+      // const event = await newevent.save();
       res.json(event);
+      event.save();
+      /* .then(result => {
+      res.status(201).json({
+        message: 'Created event',
+        createdevent: {
+          _id: result.id,
+          eventTitle: result.eventTitle,
+          request: {
+            type: 'post',
+            url: 'http://localhost:3000/events/' + result._id
+          }
+        }
+      });
+    }); */
     } catch (err) {
       console.error(err.message);
       res.status(500).send('Server Error');
@@ -195,7 +235,7 @@ router.put('/unlike/:id', auth, async (req, res) => {
 // @route    event api/events/comment/:id
 // @desc     Comment on a event
 // @access   Private
-router.event(
+router.post(
   '/comment/:id',
   [
     auth,
