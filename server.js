@@ -16,6 +16,9 @@ console.log(`app: ${app.get('env')}`);
 // Connect to db
 connectDB();
 
+// setting the view engine and what engine to view it on and dont need to require as it will automatically be loaded
+app.set('view engine', 'pug');
+
 // Initialising the middleware parses the body of the request into JSON
 app.use(express.json({ extended: false }));
 
@@ -26,9 +29,6 @@ app.use(express.static('uploads'));
 // app.use('/api/events', express.static('events'));
 
 app.use(helmet());
-
-// prompting the server to log the data befor it is passed to the routes
-app.use(morgan('tiny'));
 
 /*
 This prevents CORS errors from happening
@@ -55,6 +55,8 @@ app.use((req, res, next) => {
 });
 
 if (app.get('env') === 'development') {
+  // prompting the server to log the data befor it is passed to the routes
+  // app.use(morgan('tiny'));
   app.use(morgan('tiny'));
   console.log('morgan Enabeled');
 }
