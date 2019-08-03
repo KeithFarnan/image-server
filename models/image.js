@@ -4,7 +4,30 @@ const imageSchema = mongoose.Schema({
   // _id is convention
   // ObjectId specific and unique
   _id: mongoose.Schema.Types.ObjectId,
-  imageTitle: String,
+  // date: {
+  //   type: Date,
+  //   default: Date.now
+  //   // required: true
+  // },
+  imageTitle: {
+    type: String,
+    required: true
+  },
+  // location: String,
+  // images: [
+  //   {
+  rawImageUrl: {
+    type: String
+    // required: true
+  }
+  //   }
+  // ]
+  /* images: [
+    {
+      image: {
+        type: Schema.Types.ObjectId,
+        ref: 'image'
+        imageTitle: String,
   rawImageUrl: {
     type: String
     // required: true
@@ -15,6 +38,9 @@ const imageSchema = mongoose.Schema({
   // webPUrl: {
   //   type: String
   // }
+      }
+    }
+  ] */
 });
 
 // this has a capital letter by convention
