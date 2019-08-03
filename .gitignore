@@ -81,3 +81,5 @@ config/production.json
 
 # ignore vscode settings
 .vscode
+
+/uploads
