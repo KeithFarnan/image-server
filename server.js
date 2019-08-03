@@ -3,22 +3,32 @@ const connectDB = require('./database');
 const path = require('path');
 // executes express like a function allowing us to use methods
 const app = express();
+const helmet = require('helmet');
 
-// all requests are funnelled through this middleware which logs the data and then lets it continue
-// morgan behind the scenes will use the next fuction saying "i logged it now you do something"
+// all requests are funnelled through this middleware which logs the data and then lets it continue morgan behind the scenes will use the next fuction saying "i logged it now you do something"
 const morgan = require('morgan');
 
-// prompting the server to log the data befor it is passed to the routes
-app.use(morgan('dev'));
+/* 
+console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
+console.log(`app: ${app.get('env')}`);
+*/
 
-// Connect Database
+// Connect to db
 connectDB();
 
-//creating a static route to the images folder only used for urls targeted at /uploads
-app.use('/api/uploads', express.static('uploads'));
-
-// Initialising the middleware
+// Initialising the middleware parses the body of the request into JSON
 app.use(express.json({ extended: false }));
+
+app.use(express.urlencoded({ extended: true }));
+
+//creating a static route to the images folder only used for urls targeted at /uploads
+app.use(express.static('uploads'));
+// app.use('/api/events', express.static('events'));
+
+app.use(helmet());
+
+// prompting the server to log the data befor it is passed to the routes
+app.use(morgan('tiny'));
 
 /*
 This prevents CORS errors from happening
@@ -44,12 +54,18 @@ app.use((req, res, next) => {
   next();
 });
 
+if (app.get('env') === 'development') {
+  app.use(morgan('tiny'));
+  console.log('morgan Enabeled');
+}
+
 // all urls with /images will use imageRoutes files
 // this way allows us to split up the code into seperate files
 // setting the routes for the application to use
 app.use('/api/users', require('./routes/api/users'));
 app.use('/api/auth', require('./routes/api/auth'));
 app.use('/api/images', require('./routes/api/images'));
+app.use('/api/events', require('./routes/api/events'));
 
 // all requests that are not any of the above are handelled below
 app.use((req, res, next) => {
