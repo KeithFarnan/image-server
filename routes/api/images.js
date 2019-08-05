@@ -1,12 +1,11 @@
-const express = require('express');
+const Joi = require("joi");
+const mongoose = require("mongoose");
+const express = require("express");
 const router = express.Router();
-const Image = require('../../models/image');
-const mongoose = require('mongoose');
-const multer = require('multer');
-const { check, validationResult } = require('express-validator/check');
-const mkdirp = require('mkdirp');
-const fs = require('fs');
-const User = require('../../models/user');
+const Image = require("../../models/image");
+const multer = require("multer");
+const { check, validationResult } = require("express-validator");
+const User = require("../../models/user");
 
 // more detailed way of storing files not just destination
 const storage = multer.diskStorage({
@@ -14,19 +13,19 @@ const storage = multer.diskStorage({
     callback(
       null,
       // __dirname +
-      'uploads/'
+      "uploads/"
       // + file.originalname
     );
   },
   filename: function(req, file, callback) {
-    callback(null, file.originalname + '-' + Date.now());
+    callback(null, file.originalname + "-" + Date.now());
   }
 });
 // types of files to upload
 const filefilter = (req, file, cb) => {
   //reject a file == false save == true
   // true saves the file, false does not
-  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+  if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
     cb(null, true);
   } else {
     cb(null, false);
@@ -44,52 +43,41 @@ const upload = multer({
   fileFilter: filefilter
 });
 
-// const make =
-mkdirp('uploads/user.name/the/fore', function(err) {
+/* // const make =
+mkdirp("uploads/user.name/the/fore", function(err) {
   if (err) console.error(err);
-  console.log('created the file');
+  console.log("created the file");
 });
 
 // Async/Await:
 async function copyFiles() {
   try {
-    await fs.copy('/tmp/myfile', '/tmp/mynewfile');
-    console.log('success!');
+    await fs.copy("/tmp/myfile", "/tmp/mynewfile");
+    console.log("success!");
   } catch (err) {
     console.error(err);
   }
-}
+} */
 
 // @route    image api/images
 // @desc     Create a image
 // @access   Private
 router.post(
-  '/',
-  //
-  // make,
-  // mkdirp,
-  upload.single('picture'),
-  async (req, res, next) => {
-    // console.log(req.file);
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    const user = await User.findById(req.body.userId);
-    if (!user) return res.status(400).send('invalid user');
+  "/",
+  // upload.single("picture"),
+  async (req, res) => {
+    const { error } = validateImage(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
+
+    // const user = await User.findById(req.body.userId);
+    // if (!user) return res.status(400).send("invalid user");
 
     try {
       let image = new Image({
-        _id: new mongoose.Types.ObjectId(),
-        user: user.userId,
+        // user: user.userId,
         imageTitle: req.body.imageTitle,
-        // images: [
-        //   {
         rawImageUrl: req.file.path
-        //   }
-        // ]
       });
-      // const image = await newimage.save();
       res.json(image);
       image.save();
       /* .then(result => {
@@ -107,7 +95,7 @@ router.post(
     }); */
     } catch (err) {
       console.error(err.message);
-      res.status(500).send('Server Error');
+      res.status(500).send("Server Error");
     }
   }
 );
@@ -115,199 +103,100 @@ router.post(
 // @route    GET api/images
 // @desc     Get all images
 // @access   Private
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
+  const { error } = validateImage(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
   try {
-    const images = await image.find().sort({ date: -1 });
+    const images = await Image.find().sort({ date: -1 });
     res.json(images);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).send("Server Error");
   }
 });
 
 // @route    GET api/images/:id
 // @desc     Get image by ID
 // @access   Private
-router.get('/:id', async (req, res) => {
+router.get("/:id", async (req, res) => {
+  const { error } = validateImage(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+
   try {
     const image = await image.findById(req.params.id);
 
     if (!image) {
-      return res.status(404).json({ msg: 'image not found' });
+      return res.status(404).json({ msg: "image not found" });
     }
 
     res.json(image);
   } catch (err) {
     console.error(err.message);
-    if (err.kind === 'ObjectId') {
-      return res.status(404).json({ msg: 'image not found' });
+
+    if (err.kind === "ObjectId") {
+      return res.status(404).json({ msg: "image not found" });
     }
-    res.status(500).send('Server Error');
+    res.status(500).send("Server Error");
   }
 });
 
 // @route    DELETE api/images/:id
 // @desc     Delete a image
 // @access   Private
-router.delete('/:id', async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
-    const image = await image.findById(req.params.id);
-
-    if (!image) {
-      return res.status(404).json({ msg: 'image not found' });
-    }
-
-    // Check user
-    if (image.user.toString() !== req.user.id) {
-      return res.status(401).json({ msg: 'User not authorized' });
-    }
-
-    await image.remove();
-
-    res.json({ msg: 'image removed' });
+    const person = await Person.findByIdAndRemove(req.params.id);
+    if (!person) return res.status(404).send("this person does not exist");
+    res.send(person);
+    res.json({ msg: "image removed" });
   } catch (err) {
     console.error(err.message);
-    if (err.kind === 'ObjectId') {
-      return res.status(404).json({ msg: 'image not found' });
+    if (err.kind === "ObjectId") {
+      return res.status(404).json({ msg: "image not found" });
     }
-    res.status(500).send('Server Error');
+    res.status(500).send("Server Error");
   }
 });
 
 // @route    PUT api/images/like/:id
 // @desc     Like a image
 // @access   Private
-router.put('/like/:id', async (req, res) => {
+router.put("/:id", async (req, res) => {
+  const { error } = validatePerson(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+
   try {
-    const image = await image.findById(req.params.id);
-
-    // Check if the image has already been liked
-    if (
-      image.likes.filter(like => like.user.toString() === req.user.id).length >
-      0
-    ) {
-      return res.status(400).json({ msg: 'image already liked' });
-    }
-
-    image.likes.unshift({ user: req.user.id });
-
-    await image.save();
-
+    const image = await Image.findById(req.params.id);
+    if (!image) return res.status(400).send("invalid image id");
+    image.save();
     res.json(image.likes);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
+    res.status(500).send("Server Error");
   }
 });
 
-// @route    PUT api/images/unlike/:id
-// @desc     Like a image
-// @access   Private
-router.put('/unlike/:id', async (req, res) => {
-  try {
-    const image = await image.findById(req.params.id);
-
-    // Check if the image has already been liked
-    if (
-      image.likes.filter(like => like.user.toString() === req.user.id)
-        .length === 0
-    ) {
-      return res.status(400).json({ msg: 'image has not yet been liked' });
-    }
-
-    // Get remove index
-    const removeIndex = image.likes
-      .map(like => like.user.toString())
-      .indexOf(req.user.id);
-
-    image.likes.splice(removeIndex, 1);
-
-    await image.save();
-
-    res.json(image.likes);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
-  }
-});
-
-// @route    image api/images/comment/:id
-// @desc     Comment on a image
-// @access   Private
-router.post(
-  '/comment/:id',
-  [
-    [
-      check('text', 'Text is required')
-        .not()
-        .isEmpty()
-    ]
-  ],
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    try {
-      const user = await User.findById(req.user.id).select('-password');
-      const image = await image.findById(req.params.id);
-
-      const newComment = {
-        text: req.body.text,
-        name: user.name,
-        avatar: user.avatar,
-        user: req.user.id
-      };
-
-      image.comments.unshift(newComment);
-
-      await image.save();
-
-      res.json(image.comments);
-    } catch (err) {
-      console.error(err.message);
-      res.status(500).send('Server Error');
-    }
-  }
-);
-
-// @route    DELETE api/images/comment/:id/:comment_id
-// @desc     Delete comment
-// @access   Private
-router.delete('/comment/:id/:comment_id', async (req, res) => {
-  try {
-    const image = await image.findById(req.params.id);
-
-    // Pull out comment
-    const comment = image.comments.find(
-      comment => comment.id === req.params.comment_id
-    );
-
-    // Make sure comment exists
-    if (!comment) {
-      return res.status(404).json({ msg: 'Comment does not exist' });
-    }
-
-    // Check user
-    if (comment.user.toString() !== req.user.id) {
-      return res.status(401).json({ msg: 'User not authorized' });
-    }
-
-    // Get remove index
-    const removeIndex = image.comments
-      .map(comment => comment.id)
-      .indexOf(req.params.comment_id);
-
-    image.comments.splice(removeIndex, 1);
-
-    await image.save();
-
-    res.json(image.comments);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
-  }
-});
+function validateImage(image) {
+  const schema = Joi.object().keys({
+    userId: Joi.string(),
+    imageTitle: Joi.string()
+      .alphanum()
+      .min(3)
+      .max(30)
+      .required(),
+    rawImageUrl: Joi.string()
+      .alphanum()
+      .min(3)
+      .max(30)
+      .required()
+    // password: Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/),
+    // access_token: [Joi.string(), Joi.number()],
+    // birthyear: Joi.number().integer().min(1900).max(2013),
+    // email: Joi.string().email({ minDomainAtoms: 2 })
+    // })
+    // .with('username', 'birthyear').without('password', 'access_token');
+  });
+  return Joi.validate(image, schema);
+}
 
 module.exports = router;

@@ -1,12 +1,12 @@
-const express = require('express');
-const connectDB = require('./database');
-const path = require('path');
+const express = require("express");
+const connectDB = require("./database");
+const path = require("path");
 // executes express like a function allowing us to use methods
 const app = express();
-const helmet = require('helmet');
+const helmet = require("helmet");
 
 // all requests are funnelled through this middleware which logs the data and then lets it continue morgan behind the scenes will use the next fuction saying "i logged it now you do something"
-const morgan = require('morgan');
+const morgan = require("morgan");
 
 /* 
 console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
@@ -17,7 +17,7 @@ console.log(`app: ${app.get('env')}`);
 connectDB();
 
 // setting the view engine and what engine to view it on and dont need to require as it will automatically be loaded
-app.set('view engine', 'pug');
+app.set("view engine", "pug");
 
 // Initialising the middleware parses the body of the request into JSON
 app.use(express.json({ extended: false }));
@@ -25,7 +25,7 @@ app.use(express.json({ extended: false }));
 app.use(express.urlencoded({ extended: true }));
 
 //creating a static route to the images folder only used for urls targeted at /uploads
-app.use(express.static('uploads'));
+app.use(express.static("uploads"));
 // app.use('/api/events', express.static('events'));
 
 app.use(helmet());
@@ -39,14 +39,14 @@ this appends the headers to any response we get
 funnels every request thourugh this appending the headers to it
  */
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
+  res.header("Access-Control-Allow-Origin", "*");
   res.header(
-    'Access-Control-Allow-Headers',
-    'Content-Type, Authorization, Content-Length, X-Requested-With, Accept'
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization, Content-Length, X-Requested-With, Accept"
   );
   // browser sends options with post or put first
-  if (req.method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH');
+  if (req.method === "OPTIONS") {
+    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,PATCH");
     // sends the response with all the headers attached
     return res.status(200).json({});
   }
@@ -54,24 +54,25 @@ app.use((req, res, next) => {
   next();
 });
 
-if (app.get('env') === 'development') {
+if (app.get("env") === "development") {
   // prompting the server to log the data befor it is passed to the routes
   // app.use(morgan('tiny'));
-  app.use(morgan('tiny'));
-  console.log('morgan Enabeled');
+  app.use(morgan("tiny"));
+  console.log("morgan Enabeled");
 }
 
 // all urls with /images will use imageRoutes files
 // this way allows us to split up the code into seperate files
 // setting the routes for the application to use
-app.use('/api/users', require('./routes/api/users'));
-app.use('/api/auth', require('./routes/api/auth'));
-app.use('/api/images', require('./routes/api/images'));
+app.use("/api/users", require("./routes/api/users"));
+app.use("/api/auth", require("./routes/api/auth"));
+app.use("/api/images", require("./routes/api/images"));
+app.use("/api/people", require("./routes/api/people"));
 
 // all requests that are not any of the above are handelled below
 app.use((req, res, next) => {
   //  new const of Error object with the text "Not Found"
-  const error = new Error('Not Found');
+  const error = new Error("Not Found");
   // setting the status code property
   error.status = 404;
   // Executes the next method fowarding the error object
@@ -101,12 +102,12 @@ app.use((error, req, res, next) => {
 });
 
 // If the application is in production use the static assets
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === "production") {
   // Set static folder
-  app.use(express.static('client/build'));
+  app.use(express.static("client/build"));
 
-  app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
   });
 }
 

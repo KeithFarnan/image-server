@@ -1,9 +1,11 @@
+const Joi = require("joi");
+const mongoose = require("mongoose");
 const express = require("express");
 const router = express.Router();
 const gravatar = require("gravatar");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { check, validationResult } = require("express-validator/check");
+const { check, validationResult } = require("express-validator");
 const User = require("../../models/user");
 require("dotenv").config();
 
