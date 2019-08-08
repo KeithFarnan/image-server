@@ -17,7 +17,7 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ errors: [{ msg: 'User already exists' }] });
     }
 
-    const user = new User({
+    let user = new User({
       name,
       email,
       password
