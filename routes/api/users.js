@@ -16,18 +16,17 @@ router.post('/', async (req, res) => {
     if (user) {
       return res.status(400).json({ errors: [{ msg: 'User already exists' }] });
     }
-
-    let user = new User({
+    const newUser = new User({
       name,
       email,
       password
     });
     const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(password, salt);
-    await user.save();
+    newUser.password = await bcrypt.hash(password, salt);
+    await newUser.save();
     const payload = {
-      user: {
-        id: user.id
+      newUser: {
+        id: newUser.id
       }
     };
     jwt.sign(

@@ -6,7 +6,8 @@ const userSchema = mongoose.Schema({
   //   ObjectId specific and  unique
   name: {
     type: String,
-    required: true
+    required: true,
+    lowercase: true
   },
   email: {
     type: String,
@@ -17,9 +18,6 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  avatar: {
-    type: String
-  },
   date: {
     type: Date,
     default: Date.now
@@ -27,7 +25,9 @@ const userSchema = mongoose.Schema({
 });
 function validateUser(user) {
   const schema = {
-    name: Joi.string().min(3),
+    name: Joi.string()
+      .min(3)
+      .lowercase(),
     email: Joi.string()
       .min(3)
       .required(),
