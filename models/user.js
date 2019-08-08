@@ -1,3 +1,4 @@
+const Joi = require('joi');
 const mongoose = require('mongoose');
 // Pass a javaScript object to the schema method for how the product should look
 const userSchema = mongoose.Schema({
@@ -24,6 +25,21 @@ const userSchema = mongoose.Schema({
     default: Date.now
   }
 });
+function validateUser(user) {
+  const schema = {
+    name: Joi.string().min(3),
+    email: Joi.string()
+      .min(3)
+      .required(),
+    password: Joi.string()
+      .min(3)
+      .required()
+  };
+  return Joi.validate(user, schema);
+}
 
+// module.exports = mongoose.model('Person', personSchema);
+exports.User = mongoose.model('User', userSchema);
+exports.validate = validateUser;
 // this has a capital letter by convention
-module.exports = mongoose.model('User', userSchema);
+// module.exports = mongoose.model('User', userSchema);
