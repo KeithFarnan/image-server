@@ -48,11 +48,6 @@ const Event = mongoose.model(
         //     names: [String]
         //   })
         // }
-
-        // {
-        //   type: mongoose.Schema.Types.ObjectId,
-        //   ref: 'Image'
-        //
       }
     ]
   })

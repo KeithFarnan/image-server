@@ -14,11 +14,6 @@ router.post('/', upload.array('pictures'), async (req, res) => {
   const user = await User.findById(req.body.userId);
   if (!user) return res.status(400).send('invalid user');
 
-  const images = req.files.map(file => ({
-    imageTitle: file.filename,
-    imageUrl: file.path
-  }));
-  console.log(images);
   try {
     let event = new Event({
       user: {
@@ -27,7 +22,10 @@ router.post('/', upload.array('pictures'), async (req, res) => {
       },
       eventTitle: req.body.eventTitle,
       eventDate: req.body.date,
-      images: images
+      images: req.files.map(file => ({
+        imageTitle: file.filename,
+        imageUrl: file.path
+      }))
     });
     res.json(event);
     event.save();
@@ -58,7 +56,6 @@ router.get('/:id', async (req, res) => {
     if (!event) {
       return res.status(404).json({ msg: 'event not found' });
     }
-
     res.json(event);
   } catch (err) {
     console.error(err.message);
