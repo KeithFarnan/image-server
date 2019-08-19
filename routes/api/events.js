@@ -1,12 +1,8 @@
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
-
-const path = require('path');
-const fs = require('fs');
-
+const auth = require('../../middleware/auth');
 const { Event, validate } = require('../../models/event');
-const multer = require('multer');
 const { User } = require('../../models/user');
 const { Image } = require('../../models/image');
 const { upload } = require('../../multer');
@@ -45,7 +41,7 @@ router.post('/', upload.array('pictures'), async (req, res) => {
 // @access   Private
 router.get('/', async (req, res) => {
   try {
-    const events = await Event.find().sort({ date: -1 });
+    const events = await Event.find();
     res.json(events);
   } catch (err) {
     console.error(err.message);
