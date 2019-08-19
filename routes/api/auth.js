@@ -1,9 +1,21 @@
 const express = require('express');
 const router = express.Router();
+const auth = require('../../middleware/auth');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User, validate } = require('../../models/user');
 require('dotenv').config();
+
+router.get('/', async (req, res) => {
+  try {
+    console.log(req.body);
+    const user = await User.findById(req.user.id).select('-password');
+    res.json(user);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
 
 router.post('/', async (req, res) => {
   const { error } = validate(req.body);
@@ -27,6 +39,8 @@ router.post('/', async (req, res) => {
         id: user.id
       }
     };
+    //! Remove this when done testing
+    console.log('Applied the token');
 
     jwt.sign(
       payload,
@@ -35,6 +49,7 @@ router.post('/', async (req, res) => {
       (err, token) => {
         if (err) throw err;
         res.json({ token });
+        console.log('token¡');
       }
     );
   } catch (err) {
