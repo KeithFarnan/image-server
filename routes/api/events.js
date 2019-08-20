@@ -34,9 +34,7 @@ router.post('/', upload.array('pictures'), async (req, res) => {
     res.status(500).send('Server Error');
   }
 });
-// @route    GET api/events
-// @desc     Get all events
-// @access   Private
+
 router.get('/', async (req, res) => {
   try {
     const events = await Event.find();
@@ -47,9 +45,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// @route    GET api/events/:id
-// @desc     Get event by ID
-// @access   Private
 router.get('/:id', async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
@@ -67,9 +62,6 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// @route    DELETE api/events/:id
-// @desc     Delete a event
-// @access   Private
 router.delete('/:id', async (req, res) => {
   try {
     const event = await Event.findByIdAndRemove(req.params.id);
@@ -85,9 +77,6 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// @route    PUT api/events/like/:id
-// @desc     Like a event
-// @access   Private
 router.put('/:id', async (req, res) => {
   const { error } = validateevent(req.body);
   if (error) return res.status(400).send(error.details[0].message);
