@@ -16,6 +16,9 @@ console.log(`app: ${app.get('env')}`);
 // Connect to db
 connectDB();
 
+//creating a static route to the images folder only used for urls targeted at /uploads
+app.use('/uploads', express.static(process.cwd() + '/uploads'));
+
 // setting the view engine and what engine to view it on and dont need to require as it will automatically be loaded
 app.set('view engine', 'pug');
 
@@ -24,8 +27,6 @@ app.use(express.json({ extended: false }));
 
 app.use(express.urlencoded({ extended: true }));
 
-//creating a static route to the images folder only used for urls targeted at /uploads
-app.use(express.static('uploads'));
 // app.use('/api/events', express.static('events'));
 
 app.use(helmet());

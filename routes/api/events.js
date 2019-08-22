@@ -28,6 +28,7 @@ router.post('/', upload.array('pictures'), async (req, res) => {
       }))
     });
     res.json(event);
+    console.log(event);
     event.save();
   } catch (err) {
     console.error(err.message);
@@ -39,6 +40,7 @@ router.get('/', async (req, res) => {
   try {
     const events = await Event.find();
     res.json(events);
+    console.log(events);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
@@ -52,6 +54,7 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ msg: 'event not found' });
     }
     res.json(event);
+    console.log(event);
   } catch (err) {
     console.error(err.message);
 
