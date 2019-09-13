@@ -68,7 +68,6 @@ if (app.get('env') === 'development') {
 app.use('/api/users', require('./routes/api/users'));
 app.use('/api/auth', require('./routes/api/auth'));
 app.use('/api/events', require('./routes/api/events'));
-app.use('/api/people', require('./routes/api/people'));
 
 // all requests that are not any of the above are handelled below
 app.use((req, res, next) => {
