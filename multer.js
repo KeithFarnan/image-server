@@ -16,6 +16,7 @@ const storage = multer.diskStorage({
     if (!eventTitle) return res.status(400).send('invalid eventTitle');
 
     const dir = `uploads/${user.name}/${eventTitle}`;
+
     mkdirp(dir, err => {
       if (err) console.error(err);
       else callback(null, dir);
@@ -25,11 +26,10 @@ const storage = multer.diskStorage({
     callback(
       null,
       // new Date().toISOString() +
-      req.body.eventDate +
-        '-' +
-        req.body.eventTitle +
-        '.' +
-        file.originalname.split('.').pop()
+      req.body.eventDate + '-' + file.originalname
+      // req.body.eventTitle.filename +
+      // '.' +
+      // file.originalname.split('.').pop()
     );
   }
 });

@@ -9,7 +9,7 @@ const Event = mongoose.model(
   new mongoose.Schema({
     eventTitle: {
       type: String,
-      required: true,
+      // required: true,
       minlength: 3,
       maxlength: 20,
       lowercase: true,
@@ -19,29 +19,29 @@ const Event = mongoose.model(
       type: new mongoose.Schema({
         name: {
           type: String,
-          required: true,
+          // required: true,
           minlength: 5,
           maxlength: 50,
           trim: true,
           lowercase: true
         }
-      }),
-      required: true
+      })
+      // required: true
     },
     eventDate: {
       type: Date,
-      default: Date.now,
-      required: true
+      default: Date.now
+      // required: true
     },
     images: [
       {
         imageTitle: {
-          type: String,
-          required: true
+          type: String
+          // required: true
         },
         imageUrl: {
-          type: String,
-          required: true
+          type: String
+          // required: true
         }
         // people: {
         //   type: new mongoose.Schema({
@@ -55,11 +55,12 @@ const Event = mongoose.model(
 
 function validateEvent(event) {
   const schema = {
-    eventTitle: Joi.string()
-      .min(3)
-      .max(20)
-      .required(),
-    userId: Joi.ObjectId().required(),
+    eventTitle: Joi.string(),
+    // .min(3)
+    // .max(20),
+    // .required()
+    userId: Joi.ObjectId(),
+    // .required(),
     imageTitle: Joi.string(),
     imageUrl: Joi.string(),
     eventDate: Joi.date()

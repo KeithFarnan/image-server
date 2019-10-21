@@ -8,11 +8,14 @@ const { Image } = require('../../models/image');
 const { upload } = require('../../multer');
 
 router.post('/', upload.array('pictures'), async (req, res) => {
+  console.log(req);
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
-
+  // console.log('Validated Body');
   const user = await User.findById(req.body.userId);
   if (!user) return res.status(400).send('invalid user');
+  // console.log('got user' + user);
+  // console.log(user.name);
 
   try {
     let event = new Event({
@@ -28,11 +31,12 @@ router.post('/', upload.array('pictures'), async (req, res) => {
       }))
     });
     res.json(event);
-    console.log(event);
+    // console.log('Created Event' + event);
     event.save();
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
+    // console.log('cought the error ' + err.message);
   }
 });
 
@@ -40,7 +44,7 @@ router.get('/', async (req, res) => {
   try {
     const events = await Event.find();
     res.json(events);
-    console.log(events);
+    // console.log(events);
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
