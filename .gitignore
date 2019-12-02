@@ -82,4 +82,8 @@ config/production.json
 # ignore vscode settings
 .vscode
 
+# Ignore uploads folder
 /uploads
+
+# Ignore mac config files
+._.DS_Store
