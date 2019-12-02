@@ -39,7 +39,6 @@ router.post('/', async (req, res) => {
         id: user.id
       }
     };
-    //! Remove this when done testing
     console.log('Applied the token');
 
     jwt.sign(
