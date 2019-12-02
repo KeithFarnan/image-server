@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-// connect to mongoDB with async command and trycatch block
+// db connection async function what try catch block if the connection is not made catch the error and exit 
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.DB_HOST, {
@@ -10,10 +10,8 @@ const connectDB = async () => {
       useFindAndModify: false
     });
     console.log('MongoDB Connected Successfully');
-    // if the connection is not made catch the error
   } catch (err) {
     console.error(err.message);
-    // Exit process with error
     process.exit(1);
   }
 };
