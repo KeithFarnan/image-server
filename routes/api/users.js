@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const { User, validate } = require('../../models/user');
 require('dotenv').config();
 
-// Route to allow users to be created in the db
+// Route to allow users to be created and stored in the db
 router.post('/', async (req, res) => {
   const { error } = validate(req.body);
   if (error)    return res.status(400).send(error.details[0].message);
